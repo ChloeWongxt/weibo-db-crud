@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!-- 数据库驱动-->
+
+    <!--  因为生成过程中需要连接db，所以此处要指定驱动jar包的位置 -->
+    <classPathEntry location="C:Users/ChloeWong/.m2/repository/mysql/mysql-connector-java/5.1.46/mysql-connector-java-5.1.46.jar"/>
+    <context id="context" targetRuntime="MyBatis3">
+        <!--设置编码格式-->
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/weibo"
+                        userId="root" password="123456"/>
+
+        <javaModelGenerator targetPackage="com.chloe.weibo.core.entity"
+                            targetProject="H:/thesis/idea/weibo-db-crud/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="H:/thesis/idea/weibo-db-crud/src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator targetPackage="com.chloe.weibo.core.dao"
+                             targetProject="H:/thesis/idea/weibo-db-crud/src/main/java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!--modelType="flat" 一张表生成一个实体类-->
+        <!--<table tableName="tb_userData" domainObjectName="UserData"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_comment" domainObjectName="Comment"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_file" domainObjectName="File"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_forwarding" domainObjectName="Forwarding"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_follow" domainObjectName="Follow"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_user" domainObjectName="User"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_recom_user" domainObjectName="RecomUser"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_weibo" domainObjectName="Weibo"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_topic" domainObjectName="Topic"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_weibo" domainObjectName="Weibo"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_discuss" domainObjectName="Discuss"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_tag" domainObjectName="Tag"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+        <!--<table tableName="tb_user_tag" domainObjectName="UserTag"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--enableDeleteByExample="true" enableSelectByExample="true"-->
+               <!--selectByExampleQueryId="true" modelType="flat">-->
+            <!--&lt;!&ndash;<columnRenamingRule searchString="^D_"-->
+                                <!--replaceString=""/>&ndash;&gt;-->
+        <!--</table>-->
+
+    </context>
+</generatorConfiguration>
