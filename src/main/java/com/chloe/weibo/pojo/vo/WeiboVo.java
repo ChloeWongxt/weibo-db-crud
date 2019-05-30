@@ -31,6 +31,7 @@ public class WeiboVo {
     private String fileList;
     private Boolean isLike;
     private Boolean isCollect;
+    private WeiboVo fatherWeibo;
 
     public Integer getWeiboId() {
         return weiboId;
@@ -184,7 +185,15 @@ public class WeiboVo {
         isCollect = collect;
     }
 
-    public WeiboVo(Weibo weibo, User user, List<String> files, List<String> topics,Boolean isLike,Boolean isCollect) {
+    public WeiboVo getFatherWeibo() {
+        return fatherWeibo;
+    }
+
+    public void setFatherWeibo(WeiboVo fatherWeibo) {
+        this.fatherWeibo = fatherWeibo;
+    }
+
+    public WeiboVo(Weibo weibo, User user, List<String> files, List<String> topics, Boolean isLike, Boolean isCollect,WeiboVo fatherWeibo) {
         this.weiboId = weibo.getWeiboId();
         this.userId = weibo.getUserId();
         this.nickName = user.getNickName();
@@ -209,6 +218,7 @@ public class WeiboVo {
         }
         this.isCollect=isCollect;
         this.isLike=isLike;
+        this.fatherWeibo=fatherWeibo;
     }
 
     public WeiboVo() {

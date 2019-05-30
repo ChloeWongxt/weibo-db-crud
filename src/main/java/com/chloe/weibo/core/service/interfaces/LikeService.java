@@ -14,14 +14,6 @@ public interface LikeService {
     List<Like> getLikeListByUserId(int userId);
 
     /**
-     * 通过用户id和页数获取某个用户点赞的微博
-     * @param userId
-     * @param pageNum
-     * @return
-     */
-    List<Weibo> getLikeWeiboPageByUserIdAndPageNum(int userId,int pageNum);
-
-    /**
      * 通过获取所有点赞信息
      * @return
      */
@@ -57,4 +49,7 @@ public interface LikeService {
     void deleteAllLikeOfOneUser(int userId);
 
     Boolean IsLikeOneWeibo(int userId,int weiboId);
+
+    Integer getLikeWeiboCount(int userId);
+    List<Integer> getLikeWeiboIdList(int userId,int startIndex,int pagesize);
 }

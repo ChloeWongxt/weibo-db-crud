@@ -57,4 +57,7 @@ public interface CollectionService {
     List<WeiboVo> getCollectionWeibo(int userId);
 
     Boolean IsCollectOneWeibo(int userId,int weiboId);
+
+    Integer getCollectionWeiboCount(int userId);
+    List<Integer> getCollectionWeiboIdList(int userId,int startIndex,int pagesize);
 }

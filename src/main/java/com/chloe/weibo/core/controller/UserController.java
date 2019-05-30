@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author ChloeWong
  * @date 2018/9/8
@@ -160,5 +162,23 @@ public class UserController {
     public Result updateUserAvatar(@RequestBody UserVo userVo) {
         userService.updateUserVo(userVo);
         return ResultUtil.success("修改用户信息成功！");
+    }
+
+    /**
+     * 模糊搜索用户
+     * @return
+     */
+    @GetMapping("/search-user")
+    public Result SearchUser(@RequestParam("userId")int userId,@RequestParam("userName")String userName,@RequestParam("pageNum")int pageNum) {
+        return userService.getSearchUserVo(userId,userName,pageNum);
+    }
+
+    /**
+     * 获取热门用户
+     * @return
+     */
+    @GetMapping("/get-hot-user")
+    public Result GetHotUser(@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) {
+        return userService.getHotUserVo(userId,pageNum);
     }
 }

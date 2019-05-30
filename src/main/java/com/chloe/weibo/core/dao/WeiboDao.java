@@ -38,4 +38,13 @@ public interface WeiboDao {
     int updateByPrimaryKeySelective(Weibo record);
 
     int updateByPrimaryKey(Weibo record);
+
+    int countSearchWeibo(String weiboConet);
+
+    List<Integer> selectSearchWeibo(@Param("weiboContent") String weiboContent,
+                                    @Param("startIndex") int startIndex,
+                                    @Param("pageSize")int pageSize);
+
+    List<Integer> getHotWeibo(@Param("startIndex") int startIndex,
+                              @Param("pageSize")int pageSize);
 }

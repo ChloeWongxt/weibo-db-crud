@@ -36,4 +36,10 @@ public interface UserDao {
     List<User> getPassword(String logName);
 
     int selectByWeiboId(int weiboId);
+
+    int countSearchUser(String nickName);
+
+    List<User> selectSearchUser(@Param("nickName")String nickName,
+                                @Param("startIndex") int startIndex,
+                                @Param("pageSize")int pageSize);
 }

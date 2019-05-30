@@ -41,4 +41,8 @@ public interface UserService {
     String encryptPsd(String plainPsd);
 
     boolean validatePsd(String plainPsd, String encryptedPsd);
+
+    Result getSearchUserVo(int userId,String userName,int pageNum);
+
+    Result getHotUserVo(int userId,int pageNum);
 }

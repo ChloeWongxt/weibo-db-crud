@@ -549,4 +549,18 @@
     from tb_weibo
     where is_Del = false and weibo_id= #{weiboId,jdbcType=INTEGER}
   </select>
+  <select id="selectSearchUser" resultMap="BaseResultMap" parameterType="map">
+    select
+    <include refid="Base_Column_List" />
+    from tb_user
+    where nick_name like #{nickName,jdbcType=VARCHAR} and is_Del=false
+    Order by gmt_create desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="countSearchUser" resultType="java.lang.Integer" parameterType="java.lang.String">
+    select count(*)
+    from tb_user
+    where nick_name like #{nickName,jdbcType=VARCHAR} and is_Del=false
+  </select>
 </mapper>

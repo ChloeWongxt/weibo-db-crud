@@ -301,4 +301,13 @@
       is_del = #{isDel,jdbcType=BIT}
     where collection_id = #{collectionId,jdbcType=INTEGER}
   </update>
+
+  <select id="getCollectionWeiIdList" resultType="java.lang.Integer" parameterType="map">
+    select weibo_id
+    from tb_collection
+    where user_id= #{userId}
+    and is_Del=false
+    Order by gmt_create desc
+    limit #{startIndex},#{pageSize}
+  </select>
 </mapper>

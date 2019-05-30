@@ -41,17 +41,6 @@ public class LikeServiceImpl implements LikeService {
 
     @Transactional
     @Override
-    public List<Weibo> getLikeWeiboPageByUserIdAndPageNum(int userId, int pageNum) {
-
-//        List<Like> likeList=getLikeListByUserId(userId);
-//        if (likeList.size()>0){
-//            List<Integer> likeWeiboIdList=
-//        }
-        return null;
-    }
-
-    @Transactional
-    @Override
     public void addLike(int userId, int weiboId) {
         LikeExample likeExample=new LikeExample();
         likeExample.createCriteria().andWeiboIdEqualTo(weiboId).andUserIdEqualTo(userId).andIsDelEqualTo(false);
@@ -118,5 +107,21 @@ public class LikeServiceImpl implements LikeService {
         }else {
             return false;
         }
+    }
+
+    @Transactional
+    @Override
+    public Integer getLikeWeiboCount(int userId) {
+        LikeExample likeExample=new LikeExample();
+        likeExample.createCriteria().andUserIdEqualTo(userId).andIsDelEqualTo(false);
+        int total=likeDao.countByExample(likeExample);
+        return total;
+    }
+
+    @Transactional
+    @Override
+    public List<Integer> getLikeWeiboIdList(int userId, int startIndex, int pagesize) {
+
+        return likeDao.getLikeWeiIdList(userId,startIndex,pagesize);
     }
 }

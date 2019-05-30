@@ -1,14 +1,17 @@
 package com.chloe.weibo.core.controller;
 
+import com.chloe.weibo.core.service.interfaces.UserService;
 import com.chloe.weibo.pojo.data.Result;
 import com.chloe.weibo.core.service.interfaces.MainFunctionService;
 import com.chloe.weibo.core.service.interfaces.WeiboService;
 import com.chloe.weibo.common.utils.ResultUtil;
+import com.chloe.weibo.pojo.vo.UserVo;
 import com.chloe.weibo.pojo.vo.WeiboVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 @RestController
 public class WeiboController {
@@ -17,6 +20,8 @@ public class WeiboController {
     private MainFunctionService mainFunctionService;
     @Autowired
     private WeiboService weiboService;
+    @Autowired
+    private UserService userService;
 
 
     /**
@@ -186,4 +191,45 @@ public class WeiboController {
         Result result= mainFunctionService.getAllWeiboVoPageByUserId(userId,pageNum);
         return result;
     }
+
+    /**
+     * 模糊搜索微博内容
+     * @return
+     */
+    @GetMapping("/search-weibo")
+    public Result SearchWeibo(@RequestParam("userId")int userId,@RequestParam("weiboContent")String weiboContent,@RequestParam("pageNum") Integer pageNum) {
+        return weiboService.getSearchWeiboVoList(userId,weiboContent,pageNum);
+    }
+
+    /**
+     * 查询热门微博内容
+     * @return
+     */
+    @GetMapping("/get-hot-weibo")
+    public Result GetHotWeibo(@RequestParam("userId")int userId,@RequestParam("pageNum") Integer pageNum) {
+        return weiboService.getHotWeiboVoList(userId,pageNum);
+    }
+
+    /**
+     * 获取某一用户的点赞微博
+     * @param userId
+     * @param pageNum
+     * @return
+     */
+    @GetMapping(value = "/get-like-weibo")
+    public Result getLikeWeibo(@RequestParam("userId") int userId,@RequestParam("pageNum")int pageNum) {
+        return ResultUtil.success(weiboService.getLikeWeiboVoList(userId,pageNum));
+    }
+
+    /**
+     * 获取某一用户的收藏微博
+     * @param userId
+     * @param pageNum
+     * @return
+     */
+    @GetMapping(value = "/get-collection-weibo-1")
+    public Result getCollectiondWeibo(@RequestParam("userId") int userId,@RequestParam("pageNum")int pageNum) {
+        return ResultUtil.success(weiboService.getCollectionWeiboVoList(userId,pageNum));
+    }
+
 }

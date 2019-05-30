@@ -301,4 +301,13 @@
       is_del = #{isDel,jdbcType=BIT}
     where like_id = #{likeId,jdbcType=INTEGER}
   </update>
+
+  <select id="getLikeWeiIdList" resultType="java.lang.Integer" parameterType="map">
+    select weibo_id
+    from tb_like
+    where user_id= #{userId}
+    and is_Del=false
+    Order by gmt_create desc
+    limit #{startIndex},#{pageSize}
+  </select>
 </mapper>

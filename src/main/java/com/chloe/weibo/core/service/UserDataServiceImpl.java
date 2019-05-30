@@ -80,7 +80,7 @@ public class UserDataServiceImpl implements UserDataService {
     public void increaseBeFollowedAmount(int userId) {
         UserData userData=userDataDao.selectByPrimaryKey(userId);
         int beFollowAmount=userData.getBeFollowedAmount()+1;
-        userData.setWeiboAmount(beFollowAmount);
+        userData.setBeFollowedAmount(beFollowAmount);
         if (userDataDao.updateByPrimaryKeySelective(userData)<0){
             throw new WeiboException("增加被关注数失败！");
         }
@@ -91,7 +91,7 @@ public class UserDataServiceImpl implements UserDataService {
     public void decreaseBeFollowedAmount(int userId) {
         UserData userData=userDataDao.selectByPrimaryKey(userId);
         int beFollowAmount=userData.getBeFollowedAmount()-1;
-        userData.setWeiboAmount(beFollowAmount);
+        userData.setBeFollowedAmount(beFollowAmount);
         if (userDataDao.updateByPrimaryKeySelective(userData)<0){
             throw new WeiboException("减少被关注数失败！");
         }
@@ -102,7 +102,7 @@ public class UserDataServiceImpl implements UserDataService {
     public void increaseFollowAmount(int userId) {
         UserData userData=userDataDao.selectByPrimaryKey(userId);
         int followAmount=userData.getFollowAmount()+1;
-        userData.setWeiboAmount(followAmount);
+        userData.setFollowAmount(followAmount);
         if (userDataDao.updateByPrimaryKeySelective(userData)<0){
             throw new WeiboException("增加关注数失败！");
         }
@@ -113,7 +113,7 @@ public class UserDataServiceImpl implements UserDataService {
     public void decreasFollowAmount(int userId) {
         UserData userData=userDataDao.selectByPrimaryKey(userId);
         int followAmount=userData.getFollowAmount()-1;
-        userData.setWeiboAmount(followAmount);
+        userData.setFollowAmount(followAmount);
         if (userDataDao.updateByPrimaryKeySelective(userData)<0){
             throw new WeiboException("减少关注数失败！");
         }
@@ -124,7 +124,7 @@ public class UserDataServiceImpl implements UserDataService {
     public void increaseMutualAmount(int userId) {
         UserData userData=userDataDao.selectByPrimaryKey(userId);
         int mutualAmount =userData.getMutualAmount()+1;
-        userData.setWeiboAmount(mutualAmount);
+        userData.setMutualAmount(mutualAmount);
         if (userDataDao.updateByPrimaryKeySelective(userData)<0){
             throw new WeiboException("增加相互关注数失败！");
         }
@@ -135,7 +135,7 @@ public class UserDataServiceImpl implements UserDataService {
     public void decreasMutualAmount(int userId) {
         UserData userData=userDataDao.selectByPrimaryKey(userId);
         int mutualAmount =userData.getMutualAmount()-1;
-        userData.setWeiboAmount(mutualAmount);
+        userData.setMutualAmount(mutualAmount);
         if (userDataDao.updateByPrimaryKeySelective(userData)<0){
             throw new WeiboException("减少相互关注数失败！");
         }

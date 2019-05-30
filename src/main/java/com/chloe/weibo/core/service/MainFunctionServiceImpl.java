@@ -110,11 +110,11 @@ public class MainFunctionServiceImpl implements MainFunctionService {
             throw new WeiboException("该微博未修改，请修改后再提交！");
         }
 
-        //1.更新文件
-        fileService.updateFiles(weiboId,org_files,new_files);
-
-        //2.更新话题
-        discussService.updateTopicList(weiboId,org_topics,new_topics);
+//        //1.更新文件
+//        fileService.updateFiles(weiboId,org_files,new_files);
+//
+//        //2.更新话题
+//        discussService.updateTopicList(weiboId,org_topics,new_topics);
 
         //3.更新微博表
         weiboService.updateWeibo(weibo);
@@ -127,12 +127,16 @@ public class MainFunctionServiceImpl implements MainFunctionService {
     public WeiboVo getOneWeiboVoByWeiboId(int orguserId,int weiboId) {
         Weibo weibo=weiboDao.selectByPrimaryKey(weiboId);
         if (weibo==null){
-            throw new WeiboException("查找微博信息失败！");
+            return null;
         }
-
         int userId = weibo.getUserId();
         Boolean isOnlyText = weibo.getIsOnlyText();
         Boolean isTopic = weibo.getIsTopic();
+        Boolean isForward=weibo.getWeiboType();
+        WeiboVo fatherWeiboVo=null;
+        if (isForward){
+            fatherWeiboVo=weiboService.getFatherWeiboVoByWeiboId(orguserId, weiboId);
+        }
         User user=userDao.selectByPrimaryKey(userId);
         if (user==null){
             throw new WeiboException("查找用户信息失败！");
@@ -155,7 +159,7 @@ public class MainFunctionServiceImpl implements MainFunctionService {
         Boolean isLike=likeService.IsLikeOneWeibo(orguserId,weiboId);
         Boolean isCollect=collectionService.IsCollectOneWeibo(orguserId,weiboId);
 
-        WeiboVo weiboVo=new WeiboVo(weibo,user,files,topics,isLike,isCollect);
+        WeiboVo weiboVo=new WeiboVo(weibo,user,files,topics,isLike,isCollect,fatherWeiboVo);
 
         return weiboVo;
     }
@@ -242,11 +246,9 @@ public class MainFunctionServiceImpl implements MainFunctionService {
     @Transactional
     @Override
     public Result getForwardingOrignalWeiboContent(int weiboId) {
-
         String message=null;
         if (weiboDao.selectByPrimaryKey(weiboId).getWeiboType()){
-            int org_weiboId=forwardingService.getOrgWeiboIdByWeiboId(weiboId);
-            Weibo weibo=weiboDao.selectByPrimaryKey(org_weiboId);
+            Weibo weibo=weiboDao.selectByPrimaryKey(weiboId);
             if (weibo.getWeiboType()){
                 String userName=userDao.selectByPrimaryKey(weibo.getUserId()).getNickName();
                 //原微博也为转发微博

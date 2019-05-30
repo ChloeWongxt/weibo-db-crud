@@ -284,4 +284,14 @@
       mutual_amount = #{mutualAmount,jdbcType=INTEGER}
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
+
+
+  <select id="selectHotUserIdList" resultType="java.lang.Integer" parameterType="map">
+    select user_id
+    from tb_userdata
+    Order by be_followed_amount desc
+    limit #{startIndex},#{pageSize}
+  </select>
+
+
 </mapper>

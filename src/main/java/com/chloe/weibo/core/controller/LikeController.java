@@ -43,12 +43,6 @@ public class LikeController {
         return ResultUtil.success("删除点赞成功");
     }
 
-    //获取某一用户的点赞信息
-    //参数：weiboId
-    @GetMapping(value = "/get-like-weibo")
-    public Result getLike(@RequestParam("userId") int userId,@RequestParam("pagNum")int pagNum) {
-        return ResultUtil.success(likeService.getLikeListByUserId(userId));
-    }
 
     //查询用户对某条微博是否点赞
     //参数：weiboId

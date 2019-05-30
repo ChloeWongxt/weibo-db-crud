@@ -1,9 +1,8 @@
 package com.chloe.weibo.core.service;
 
-import com.chloe.weibo.core.dao.FollowDao;
-import com.chloe.weibo.core.dao.UserDao;
-import com.chloe.weibo.core.dao.UserTagDao;
-import com.chloe.weibo.core.dao.WeiboDao;
+import com.chloe.weibo.core.dao.*;
+import com.chloe.weibo.core.service.interfaces.FollowService;
+import com.chloe.weibo.pojo.data.PageBean;
 import com.chloe.weibo.pojo.data.Result;
 import com.chloe.weibo.core.entity.User;
 import com.chloe.weibo.core.entity.entityExample.UserExample;
@@ -13,6 +12,7 @@ import com.chloe.weibo.core.service.interfaces.UserService;
 import com.chloe.weibo.core.service.interfaces.UserTagService;
 import com.chloe.weibo.common.utils.EncryptUtils;
 import com.chloe.weibo.common.utils.ResultUtil;
+import com.chloe.weibo.pojo.vo.UserRecomVo;
 import com.chloe.weibo.pojo.vo.UserVo;
 
 import org.apache.commons.codec.DecoderException;
@@ -42,6 +42,12 @@ public class UserServiceImpl implements UserService {
     UserTagService userTagService;
     @Autowired
     UserDataService userDataService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    FollowService followService;
+    @Autowired
+    UserDataDao userDataDao;
 
     @Transactional
     @Override
@@ -257,5 +263,67 @@ public class UserServiceImpl implements UserService {
         }
 
         return flag;
+    }
+
+    @Transactional
+    @Override
+    public Result getSearchUserVo(int userId,String userName,int pageNum) {
+        String nickName='%'+userName+'%';
+
+        //符合搜索的总页数
+        int total=userDao.countSearchUser(nickName);
+        int pagesize=10;
+        PageBean<UserRecomVo> userVoPageBean =new PageBean<>(pageNum,pagesize,total);
+
+        int startIndex= userVoPageBean.getStartIndex();
+
+        //一页所包含的user信息
+        List<User> userList=userDao.selectSearchUser(nickName, startIndex, pagesize);
+
+        if (userList==null){
+            return null;
+        }
+
+        List<UserVo> userVoList=changeUserListToUserVoList(userList);
+        List<UserRecomVo> userRecomVoList=new ArrayList<>();
+        for(UserVo userVo:userVoList){
+            UserRecomVo userRecomVo=new UserRecomVo(userVo,followService.checkIsFollow(userId,userVo.getUserId()));
+            userRecomVoList.add(userRecomVo);
+        }
+
+        userVoPageBean.setList(userRecomVoList);
+        return ResultUtil.success(userVoPageBean);
+    }
+
+    @Transactional
+    @Override
+    public Result getHotUserVo(int userId, int pageNum) {
+
+        int total=50;
+        int pagesize=5;
+        PageBean<UserRecomVo> userVoPageBean =new PageBean<>(pageNum,pagesize,total);
+
+        int startIndex= userVoPageBean.getStartIndex();
+
+        //一页所包含的userIdList
+        List<Integer> userIdList=userDataDao.selectHotUserIdList(startIndex,pagesize);
+
+        if (userIdList==null){
+            return null;
+        }
+
+
+        List<UserVo> userVoList=new ArrayList<>();
+        for (int userid:userIdList){
+            userVoList.add(getUserVoByUserId(userid));
+        }
+        List<UserRecomVo> userRecomVoList=new ArrayList<>();
+        for(UserVo userVo:userVoList){
+            UserRecomVo userRecomVo=new UserRecomVo(userVo,followService.checkIsFollow(userId,userVo.getUserId()));
+            userRecomVoList.add(userRecomVo);
+        }
+
+        userVoPageBean.setList(userRecomVoList);
+        return ResultUtil.success(userVoPageBean);
     }
 }

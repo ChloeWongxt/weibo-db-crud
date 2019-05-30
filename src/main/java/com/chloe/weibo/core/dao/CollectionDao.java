@@ -28,4 +28,6 @@ public interface CollectionDao {
     int updateByPrimaryKeySelective(Collection record);
 
     int updateByPrimaryKey(Collection record);
+
+    List<Integer> getCollectionWeiIdList(@Param("userId")int userId,@Param("startIndex")int startIndex,@Param("pageSize") int pageSize);
 }

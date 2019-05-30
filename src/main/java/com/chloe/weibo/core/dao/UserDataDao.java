@@ -93,4 +93,7 @@ public interface UserDataDao {
      * @mbggenerated Sat Apr 13 19:53:05 CST 2019
      */
     int updateByPrimaryKey(UserData record);
+
+    List<Integer> selectHotUserIdList(@Param("startIndex") int startIndex,
+                                @Param("pageSize")int pageSize);
 }

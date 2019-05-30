@@ -116,4 +116,19 @@ public class CollectionServiceImpl implements CollectionService {
             return false;
         }
     }
+
+    @Transactional
+    @Override
+    public Integer getCollectionWeiboCount(int userId) {
+        CollectionExample collectionExample=new CollectionExample();
+        collectionExample.createCriteria().andUserIdEqualTo(userId).andIsDelEqualTo(false);
+        int total=collectionDao.countByExample(collectionExample);
+        return total;
+    }
+
+    @Transactional
+    @Override
+    public List<Integer> getCollectionWeiboIdList(int userId, int startIndex, int pagesize) {
+        return collectionDao.getCollectionWeiIdList(userId,startIndex,pagesize);
+    }
 }

@@ -29,4 +29,6 @@ public interface LikeDao {
     int updateByPrimaryKeySelective(Like record);
 
     int updateByPrimaryKey(Like record);
+
+    List<Integer> getLikeWeiIdList(@Param("userId")int userId,@Param("startIndex")int startIndex,@Param("pageSize") int pageSize);
 }

@@ -6,6 +6,7 @@ import com.chloe.weibo.core.entity.Forwarding;
 import com.chloe.weibo.core.entity.Weibo;
 import com.chloe.weibo.core.entity.entityExample.ForwardingExample;
 import com.chloe.weibo.common.exception.WeiboException;
+import com.chloe.weibo.core.entity.entityExample.WeiboExample;
 import com.chloe.weibo.core.service.interfaces.ForwardingService;
 import com.chloe.weibo.core.service.interfaces.WeiboService;
 import com.chloe.weibo.pojo.vo.WeiboVo;
@@ -42,7 +43,7 @@ public class ForwardingServiceImpl implements ForwardingService {
     @Override
     public Integer getOrgWeiboIdByWeiboId(Integer weiboId) {
         ForwardingExample forwardingExample=new ForwardingExample();
-        forwardingExample.createCriteria().andWeiboIdEqualTo(weiboId).andIsDelEqualTo(false);
+        forwardingExample.createCriteria().andWeiboIdEqualTo(weiboId);
         Forwarding forwarding=forwardingDao.selectByExample(forwardingExample).get(0);
         return forwarding.getOrgWeiboId();
     }
@@ -51,6 +52,7 @@ public class ForwardingServiceImpl implements ForwardingService {
     @Override
     public void addForwarding(WeiboVo weiboVo,Integer orgWeiboId) throws ParseException {
         Weibo weibo=new Weibo(weiboVo);
+        weibo.setWeiboType(true);
         weibo.setGmtCreate(new Date());
         weibo.setIsDel(false);
         weiboService.addWeibo(weibo);
@@ -103,7 +105,9 @@ public class ForwardingServiceImpl implements ForwardingService {
     @Transactional
     @Override
     public void increaseForwardingAmount(Integer weiboId) {
-        Weibo weibo=weiboDao.selectByPrimaryKey(weiboId);
+        WeiboExample weiboExample=new WeiboExample();
+        weiboExample.createCriteria().andWeiboIdEqualTo(weiboId);
+        Weibo weibo=weiboDao.selectByExample(weiboExample).get(0);
         if (weibo.getWeiboType()){
             //微博为转发
             increaseForwardingAmount(getOrgWeiboIdByWeiboId(weiboId));
