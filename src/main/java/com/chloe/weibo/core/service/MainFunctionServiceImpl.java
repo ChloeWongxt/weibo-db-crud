@@ -1,11 +1,10 @@
 package com.chloe.weibo.core.service;
 
 import com.chloe.weibo.core.dao.*;
+import com.chloe.weibo.core.entity.entityExample.*;
 import com.chloe.weibo.pojo.data.PageBean;
 import com.chloe.weibo.pojo.data.Result;
 import com.chloe.weibo.core.entity.Collection;
-import com.chloe.weibo.core.entity.entityExample.UserExample;
-import com.chloe.weibo.core.entity.entityExample.WeiboExample;
 import com.chloe.weibo.core.entity.*;
 import com.chloe.weibo.common.exception.WeiboException;
 import com.chloe.weibo.core.service.interfaces.*;
@@ -26,6 +25,8 @@ public class MainFunctionServiceImpl implements MainFunctionService {
     private FileDao fileDao;
     @Autowired
     private FollowDao followDao;
+    @Autowired
+    private LikeDao likeDao;
     @Autowired
     private ForwardingDao forwardingDao;
     @Autowired
@@ -475,6 +476,65 @@ public class MainFunctionServiceImpl implements MainFunctionService {
                     }
                 }
             }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void checkUserInofo() {
+        List<UserData> userList=userDataService.getAllUserData();
+        for (UserData userData:userList){
+            int userId=userData.getUserId();
+            WeiboExample weiboExample=new WeiboExample();
+            weiboExample.createCriteria().andUserIdEqualTo(userId).andIsDelEqualTo(false);
+            int weiboAmount=weiboDao.countByExample(weiboExample);
+
+            FollowExample followExample=new FollowExample();
+            followExample.createCriteria().andBeFollowedUserIdEqualTo(userId).andIsDelEqualTo(false);
+            int fansNum=followDao.countByExample(followExample);
+
+            FollowExample followExample2=new FollowExample();
+            followExample2.createCriteria().andFollowUserIdEqualTo(userId).andIsDelEqualTo(false);
+            int followNum=followDao.countByExample(followExample2);
+
+            int mutualNum=followDao.countMutualNum(userId);
+
+            userData.setWeiboAmount(weiboAmount);
+            userData.setBeFollowedAmount(fansNum);
+            userData.setFollowAmount(followNum);
+            userData.setMutualAmount(mutualNum);
+
+            userDataService.updateUserData(userData);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void checkWeiboInfo() {
+        WeiboExample weiboExample=new WeiboExample();
+        weiboExample.createCriteria().andIsDelEqualTo(false);
+        List<Weibo> weiboList=weiboDao.selectByExample(weiboExample);
+        for (Weibo weibo:weiboList){
+            int weiboId=weibo.getWeiboId();
+
+            LikeExample likeExample=new LikeExample();
+            likeExample.createCriteria().andWeiboIdEqualTo(weiboId).andIsDelEqualTo(false);
+            int likeNum=likeDao.countByExample(likeExample);
+
+            ForwardingExample forwardingExample=new ForwardingExample();
+            forwardingExample.createCriteria().andWeiboIdEqualTo(weiboId).andIsDelEqualTo(false);
+            int forwardNum=forwardingDao.countByExample(forwardingExample);
+
+            CommentExample commentExample=new CommentExample();
+            commentExample.createCriteria().andWeiboIdEqualTo(weiboId).andIsDelEqualTo(false);
+            int comNum=commentDao.countByExample(commentExample);
+
+            weibo.setCommentAmount(comNum);
+            weibo.setLikeAmount(likeNum);
+            weibo.setForwardingAmount(forwardNum);
+            weibo.setWeiboContent(null);
+
+            weiboService.updateWeibo(weibo);
         }
     }
 }

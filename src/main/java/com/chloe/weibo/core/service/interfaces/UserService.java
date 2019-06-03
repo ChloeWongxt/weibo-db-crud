@@ -45,4 +45,9 @@ public interface UserService {
     Result getSearchUserVo(int userId,String userName,int pageNum);
 
     Result getHotUserVo(int userId,int pageNum);
+
+    Result getCommonFollowUser(int myUserId,int userId,int pageNum);
+
+    Result getMyFollowHerUser(int myUserId,int userId,int pageNum);
+
 }

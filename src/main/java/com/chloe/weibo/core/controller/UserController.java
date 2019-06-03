@@ -8,6 +8,7 @@ import com.chloe.weibo.core.service.interfaces.UserService;
 import com.chloe.weibo.core.service.interfaces.UserTagService;
 import com.chloe.weibo.common.utils.ResultUtil;
 import com.chloe.weibo.pojo.vo.UserVo;
+import com.chloe.weibo.pojo.vo.WeiboVo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -152,12 +153,18 @@ public class UserController {
         return ResultUtil.success(userRecommendService.getRecomUserInfoList(userId));
     }
 
+
     @GetMapping(value = "/get-user-labels")
     public Result getRecommendUserId() {
         userTagService.insertTagsTest();
         return ResultUtil.success("插入标签成功");
     }
 
+    /**
+     * 更新用户头像
+     * @param userVo
+     * @return
+     */
     @PostMapping(value = "/update-user-avatar")
     public Result updateUserAvatar(@RequestBody UserVo userVo) {
         userService.updateUserVo(userVo);
@@ -180,5 +187,33 @@ public class UserController {
     @GetMapping("/get-hot-user")
     public Result GetHotUser(@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) {
         return userService.getHotUserVo(userId,pageNum);
+    }
+
+    /**
+     * 获取共同关注的用户
+     * @return
+     */
+    @GetMapping("/get-common-follow-user")
+    public Result GetCommonFollowUser(@RequestParam("myUserId")int myUserId,@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) {
+        return userService.getCommonFollowUser(myUserId,userId,pageNum);
+    }
+
+    /**
+     * 获取我关注的人也关注他的用户
+     * @return
+     */
+    @GetMapping("/get-my-follow-her-user")
+    public Result GetMyFollowHerUser(@RequestParam("myUserId")int myUserId,@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) {
+        return userService.getMyFollowHerUser(myUserId,userId,pageNum);
+    }
+
+    /**
+     * 更新用户推荐表
+     * @return
+     */
+    @PostMapping(value = "/update-recom-user")
+    public Result updateRecomUser() {
+        userRecommendService.getUserRecommend();
+        return ResultUtil.success("更新推荐表成功");
     }
 }

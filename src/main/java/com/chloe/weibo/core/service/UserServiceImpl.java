@@ -326,4 +326,57 @@ public class UserServiceImpl implements UserService {
         userVoPageBean.setList(userRecomVoList);
         return ResultUtil.success(userVoPageBean);
     }
+
+    @Transactional
+    @Override
+    public Result getCommonFollowUser(int myUserId, int userId,int pageNum) {
+        int total=followDao.getCommonFollowUserListCount(myUserId,userId);
+        int pagesize=5;
+        PageBean<UserRecomVo> userVoPageBean =new PageBean<>(pageNum,pagesize,total);
+
+        int startIndex= userVoPageBean.getStartIndex();
+
+        //一页所包含的userIdList
+        List<Integer> commonFollowUserList=followDao.getCommonFollowUserList(myUserId,userId,startIndex,pagesize);
+        if (commonFollowUserList.size()==0){
+            return ResultUtil.success("没有共同关注的好友");
+        }else{
+            List<UserRecomVo> commonFollowUserRecomVoList=new ArrayList<>();
+            for (int commonFollowUserId:commonFollowUserList){
+                UserVo userVo=userService.getUserVoByUserId(commonFollowUserId);
+                UserRecomVo userRecomVo=new UserRecomVo(userVo,followService.checkIsFollow(myUserId,commonFollowUserId));
+                commonFollowUserRecomVoList.add(userRecomVo);
+            }
+
+            userVoPageBean.setList(commonFollowUserRecomVoList);
+            return ResultUtil.success(userVoPageBean);
+        }
+    }
+
+    @Transactional
+    @Override
+    public Result getMyFollowHerUser(int myUserId, int userId,int pageNum) {
+
+        int total=followDao.getMyFollowHerUserListCount(myUserId,userId);
+        int pagesize=5;
+        PageBean<UserRecomVo> userVoPageBean =new PageBean<>(pageNum,pagesize,total);
+
+        int startIndex= userVoPageBean.getStartIndex();
+
+        //一页所包含的userIdList
+        List<Integer> myFollowHerUserList =followDao.getMyFollowHerUserList(myUserId,userId,startIndex,pagesize);
+        if (myFollowHerUserList.size()==0){
+            return ResultUtil.success("没有我关注的人也关注他");
+        }else{
+            List<UserRecomVo> myFollowHerUserRecomVoList =new ArrayList<>();
+            for (int commonFollowUserId: myFollowHerUserList){
+                UserVo userVo=userService.getUserVoByUserId(commonFollowUserId);
+                UserRecomVo userRecomVo=new UserRecomVo(userVo,followService.checkIsFollow(myUserId,commonFollowUserId));
+                myFollowHerUserRecomVoList.add(userRecomVo);
+            }
+
+            userVoPageBean.setList(myFollowHerUserRecomVoList);
+            return ResultUtil.success(userVoPageBean);
+        }
+    }
 }

@@ -232,4 +232,6 @@ public class WeiboController {
         return ResultUtil.success(weiboService.getCollectionWeiboVoList(userId,pageNum));
     }
 
+
+
 }

@@ -46,8 +46,8 @@ public class FollowController {
      * @return
      */
     @GetMapping(value = "/query-all-follow")
-    public Result queryAllFollow(@RequestParam("userId") int userId) {
-        Result result= followService.getFollowUserVoList(userId);
+    public Result queryAllFollow(@RequestParam("userId") int userId,@RequestParam("myUserId")int myUserId,@RequestParam("pageNum") int pageNum) {
+        Result result= followService.getFollowUserVoList(userId,myUserId,pageNum);
         return result;
     }
 
@@ -68,8 +68,8 @@ public class FollowController {
      * @return
      */
     @GetMapping(value = "/query-follow-me")
-    public Result queryFollowMe(int userId) {
-        Result result= followService.getBeFollowedUserVoList(userId);
+    public Result queryFollowMe(@RequestParam("userId")int userId,@RequestParam("myUserId")int myUserId,@RequestParam("pageNum")int pageNum) {
+        Result result= followService.getBeFollowedUserVoList(userId,myUserId,pageNum);
         return result;
     }
 
@@ -94,5 +94,6 @@ public class FollowController {
 
         return result;
     }
+
 
 }

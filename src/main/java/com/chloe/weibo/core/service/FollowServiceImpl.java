@@ -11,6 +11,7 @@ import com.chloe.weibo.core.service.interfaces.FollowService;
 import com.chloe.weibo.core.service.interfaces.UserDataService;
 import com.chloe.weibo.core.service.interfaces.UserService;
 import com.chloe.weibo.common.utils.ResultUtil;
+import com.chloe.weibo.pojo.vo.UserRecomVo;
 import com.chloe.weibo.pojo.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,18 +35,28 @@ public class FollowServiceImpl implements FollowService {
 
     @Transactional
     @Override
-    public Result getFollowUserVoList(Integer userId) {
+    public Result getFollowUserVoList(Integer userId,Integer myUserId,Integer pageNum) {
         List<User> followUserList =userDao.selectFollowUserListByUserId(userId);
         List<UserVo> followUserVoList=userService.changeUserListToUserVoList(followUserList);
-        return ResultUtil.success(followUserVoList);
+        List<UserRecomVo> userRecomVoList=new ArrayList<>();
+        for (UserVo userVo: followUserVoList){
+            UserRecomVo userRecomVo=new UserRecomVo(userVo,checkIsFollow(myUserId,userVo.getUserId()));
+            userRecomVoList.add(userRecomVo);
+        }
+        return ResultUtil.success(userRecomVoList);
     }
 
     @Transactional
     @Override
-    public Result getBeFollowedUserVoList(Integer userId) {
-        List<User> followUserList =userDao.selectFollowUserListByUserId(userId);
-        List<UserVo> followUserVoList=userService.changeUserListToUserVoList(followUserList);
-        return ResultUtil.success(followUserVoList);
+    public Result getBeFollowedUserVoList(Integer userId,Integer myUserId,Integer pageNum) {
+        List<User> befollowUserList =userDao.selectBeFollowUserListByUserId(userId);
+        List<UserVo> befollowedUserVoList =userService.changeUserListToUserVoList(befollowUserList);
+        List<UserRecomVo> userRecomVoList=new ArrayList<>();
+        for (UserVo userVo: befollowedUserVoList){
+            UserRecomVo userRecomVo=new UserRecomVo(userVo,checkIsFollow(myUserId,userVo.getUserId()));
+            userRecomVoList.add(userRecomVo);
+        }
+        return ResultUtil.success(userRecomVoList);
     }
 
     @Transactional
@@ -74,6 +85,7 @@ public class FollowServiceImpl implements FollowService {
         List<Integer> followUserIdList=followDao.selectFollowUserIdList(userId);
         return followUserIdList;
     }
+
 
     @Transactional
     @Override
@@ -207,6 +219,4 @@ public class FollowServiceImpl implements FollowService {
         List<Integer> fansUserIdList=followDao.selectFansUserIdList(userId);
         return fansUserIdList;
     }
-
-
 }

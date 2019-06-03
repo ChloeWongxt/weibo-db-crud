@@ -237,4 +237,42 @@
       is_del = #{isDel,jdbcType=BIT}
     where follow_id = #{followId,jdbcType=INTEGER}
   </update>
+
+  <select id="getCommonFollowUserList" resultType="java.lang.Integer" parameterType="map">
+    SELECT a.be_followed_user_id
+    FROM tb_follow a,tb_follow b
+    where a.be_followed_user_id=b.be_followed_user_id and a.follow_user_id=#{myUserId} and b.follow_user_id=#{userId} and a.is_del=false and b.is_del=false
+     limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getCommonFollowUserListNoPage" resultType="java.lang.Integer" parameterType="map">
+    SELECT a.be_followed_user_id
+    FROM tb_follow a,tb_follow b
+    where a.be_followed_user_id=b.be_followed_user_id and a.follow_user_id=#{myUserId} and b.follow_user_id=#{userId} and a.is_del=false and b.is_del=false
+  </select>
+
+  <select id="getCommonFollowUserListCount" resultType="java.lang.Integer" parameterType="map">
+    SELECT count(*)
+    FROM tb_follow a,tb_follow b
+    where a.be_followed_user_id=b.be_followed_user_id and a.follow_user_id=#{myUserId} and b.follow_user_id=#{userId} and a.is_del=false and b.is_del=false
+  </select>
+
+  <select id="getMyFollowHerUserList" resultType="java.lang.Integer" parameterType="map">
+    SELECT a.be_followed_user_id
+    FROM tb_follow a,tb_follow b
+    where a.be_followed_user_id=b.follow_user_id and a.follow_user_id=#{myUserId} and b.be_followed_user_id=#{userId} and a.is_del=false and b.is_del=false
+    limit #{startIndex},#{pageSize}
+  </select>
+
+  <select id="getMyFollowHerUserListCount" resultType="java.lang.Integer" parameterType="map">
+    SELECT count(*)
+    FROM tb_follow a,tb_follow b
+    where a.be_followed_user_id=b.follow_user_id and a.follow_user_id=#{myUserId} and b.be_followed_user_id=#{userId} and a.is_del=false and b.is_del=false
+  </select>
+
+  <select id="countMutualNum" resultType="java.lang.Integer" parameterType="map">
+    SELECT count(*)
+    FROM tb_follow a,tb_follow b
+    where a.be_followed_user_id=b.follow_user_id and b.be_followed_user_id=a.follow_user_id and a.follow_user_id=#{userId} and a.is_del=false and b.is_del=false
+  </select>
 </mapper>

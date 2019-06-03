@@ -106,4 +106,17 @@ public class WeiboTestController {
         mainFunctionService.addMutualFollowNum();
         return ResultUtil.success("增加相互关注成功！");
     }
+
+    @PostMapping(value = "/check-user-info")
+    public Result checkUserInfo() {
+        mainFunctionService.checkUserInofo();
+        return ResultUtil.success("用户微博数粉丝数等已更新");
+    }
+
+    @PostMapping(value = "/check-weibo-info")
+    public Result checkWeiboInfo() {
+        mainFunctionService.checkWeiboInfo();
+        return ResultUtil.success("微博的点赞数，转发数等已更新");
+    }
+
 }

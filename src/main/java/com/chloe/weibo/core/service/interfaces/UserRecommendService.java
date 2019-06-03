@@ -14,6 +14,7 @@ public interface UserRecommendService {
     void getUserRecommend();
     void get_user_user_num();
     int SplitData(int m, int k);
+//    double Simility(int[] ItemA, int[] ItemB);
     RecomUser getRecomUser(int userId);
     List<UserRecomVo> getRecomUserInfoList(int userId);
 }

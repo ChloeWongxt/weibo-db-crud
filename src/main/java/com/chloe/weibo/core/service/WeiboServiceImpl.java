@@ -63,7 +63,7 @@ public class WeiboServiceImpl implements WeiboService {
     @Transactional
     @Override
     public void updateWeibo(Weibo weibo) {
-        weibo.setIsModify(true);
+//        weibo.setIsModify(true);
         if (weiboDao.updateByPrimaryKeySelective(weibo)<0){
             throw new WeiboException("更新微博表失败：数据库未知错误！");
         }

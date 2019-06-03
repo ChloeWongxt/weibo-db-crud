@@ -32,4 +32,23 @@ public interface FollowDao {
     int updateByPrimaryKeySelective(Follow record);
 
     int updateByPrimaryKey(Follow record);
+
+    List<Integer> getCommonFollowUserList(@Param("myUserId")Integer myUserId,
+                                          @Param("userId")Integer userId,
+                                          @Param("startIndex") int startIndex,
+                                          @Param("pageSize")int pageSize);
+
+    List<Integer> getCommonFollowUserListNoPage(@Param("myUserId")Integer myUserId,
+                                          @Param("userId")Integer userId);
+
+    Integer getCommonFollowUserListCount(@Param("myUserId")Integer myUserId,
+                                         @Param("userId")Integer userId);
+
+    List<Integer> getMyFollowHerUserList(@Param("myUserId")Integer myUserId,
+                                         @Param("userId")int userId,
+                                         @Param("startIndex") int startIndex,
+                                         @Param("pageSize")int pageSize);
+    Integer getMyFollowHerUserListCount(@Param("myUserId")Integer myUserId,
+                                         @Param("userId")Integer userId);
+    Integer countMutualNum(@Param("userId")Integer userId);
 }

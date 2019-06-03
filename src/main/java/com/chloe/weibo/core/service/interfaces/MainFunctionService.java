@@ -28,4 +28,6 @@ public interface MainFunctionService {
     void changeCollectionInfo();
     void changeMutualFollowNum();
     void addMutualFollowNum();
+    void checkUserInofo();
+    void checkWeiboInfo();
 }

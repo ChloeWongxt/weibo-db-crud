@@ -45,6 +45,7 @@ public class UserRecommendServiceImpl implements UserRecommendService {
     static int[][] recommend;  //为每个用户推荐N个物品
     static simi [][]simiItem; //排序后的相似性矩阵
     static double [][]itemsim; //未排序的相似性矩阵
+    static int[][] userData;
     public static class simi
     {
         double value; //相似值
@@ -65,6 +66,7 @@ public class UserRecommendServiceImpl implements UserRecommendService {
         simiItem = new simi[itemsum][itemsum]; //排序后的相似性矩阵
 
         itemsim = new double[itemsum][itemsum]; //未排序的相似性矩阵
+        userData=new int[usersum][2];
 
         int i,j,k = 8;        //去用户的k个最近邻居（相似度最高）来计算推荐物品
 
@@ -90,7 +92,8 @@ public class UserRecommendServiceImpl implements UserRecommendService {
         {
             for (j=0;j<itemsum;j++)
             {
-                itemsim[i][j] = Simility(train[i],train[j]);
+
+                itemsim[i][j] = Simility(i,j,train[i],train[j]);
                 if(i == j) itemsim[i][j] = 0;   //此处有bug，已修改
             }
         }
@@ -243,7 +246,9 @@ public class UserRecommendServiceImpl implements UserRecommendService {
 //                if(System.currentTimeMillis()%(m-1)==k) //设置当前时间为随机种子  //判断随机产生0-7之间的随机数是否等于k
 //                    test[beFollowedId-1][followId-1] = 1;        //rate为评分，再此实验中只需统计有无评分的，无需讨论具体评分
 //                else
-                    train[beFollowedId-1][followId -1] = 1;  //用户号的物品号均从0开始算起，
+                userData[followId-1][0]++;//第一列存放关注人数
+                userData[beFollowedId-1][1]++;//第二列存放被关注人数
+                train[followId -1][beFollowedId-1] = 1;  //用户号的物品号均从0开始算起，
             }
         }
         return 1;
@@ -251,26 +256,27 @@ public class UserRecommendServiceImpl implements UserRecommendService {
 
     //利用训练集计算用户之间相似度
     /* 计算向量ItemA和ItemB的相似性，返回值为ItemA和ItemB的相似度 */
-    public static double Simility(int[] ItemA, int[] ItemB)
+    public static double Simility(int i,int j,int[] ItemA, int[] ItemB)
     {
-        int comUser = 0;                   //ItemA与ItemB的都被用户评论的用户个数
+        int countIa=userData[i][0];//用户i的关注量
+        int countIb=userData[j][0];//用户j的关注量
+//        double tem = Math.sqrt(countIa*countIb);
+        double comUser = 0;                   //ItemA与ItemB的都被用户评论的用户个数
         double simility = 0.0;
-        int countIa = 0;
-        int countIb = 0;
 
-        int i;
-        for (i=0;i<usersum;i++)      //此处有bug，已修改
+        int k;
+        for (k=0;i<usersum;i++)      //此处有bug，已修改
         {
             if (ItemA[i]>0&&ItemB[i]>0)
             {
-                comUser++;//查找ItemA与ItemB的都被用户评论的用户个数（被同一个用户关注的用户个数）
+                comUser=comUser+1/Math.log(1+userData[i][1]);//查找ItemA与ItemB的都被用户评论的用户个数（被同一个用户关注的用户个数）
             }
-            if (ItemA[i]>0){
-                countIa++;//评论ItemA的用户数量（关注ItemA的用户量）
-            }
-            if (ItemB[i]>0){
-                countIb++;//评论ItemB的用户数量（关注ItemB的用户量）
-            }
+//            if (ItemA[i]>0){
+//                countIa++;//评论ItemA的用户数量（关注ItemA的用户量）
+//            }
+//            if (ItemB[i]>0){
+//                countIb++;//评论ItemB的用户数量（关注ItemB的用户量）
+//            }
         }
         double tem = Math.sqrt(countIa*countIb);
 
@@ -399,31 +405,31 @@ public class UserRecommendServiceImpl implements UserRecommendService {
                     recomUserIdList.add(recomUser.getRecomUser10Id());
                 }
             case 9:if (recomUser.getRecomUser9Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser9Id());
+                recomUserIdList.add(recomUser.getRecomUser9Id());
             }
             case 8:if (recomUser.getRecomUser8Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser8Id());
+                recomUserIdList.add(recomUser.getRecomUser8Id());
             }
             case 7:if (recomUser.getRecomUser7Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser7Id());
+                recomUserIdList.add(recomUser.getRecomUser7Id());
             }
             case 6:if (recomUser.getRecomUser6Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser6Id());
+                recomUserIdList.add(recomUser.getRecomUser6Id());
             }
             case 5:if (recomUser.getRecomUser5Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser5Id());
+                recomUserIdList.add(recomUser.getRecomUser5Id());
             }
             case 4:if (recomUser.getRecomUser4Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser4Id());
+                recomUserIdList.add(recomUser.getRecomUser4Id());
             }
             case 3:if (recomUser.getRecomUser3Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser3Id());
+                recomUserIdList.add(recomUser.getRecomUser3Id());
             }
             case 2:if (recomUser.getRecomUser2Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser2Id());
+                recomUserIdList.add(recomUser.getRecomUser2Id());
             }
             case 1:if (recomUser.getRecomUser1Id()!=null) {
-                    recomUserIdList.add(recomUser.getRecomUser1Id());
+                recomUserIdList.add(recomUser.getRecomUser1Id());
             }
         }
         if (recomUserIdList.size()!=0){
@@ -441,8 +447,8 @@ public class UserRecommendServiceImpl implements UserRecommendService {
     }
 
     //系统启动时，自动启动
-//    @PostConstruct
-//    public void start() {
-//        getUserRecommend();
-//    }
+    @PostConstruct
+    public void start() {
+        getUserRecommend();
+    }
 }

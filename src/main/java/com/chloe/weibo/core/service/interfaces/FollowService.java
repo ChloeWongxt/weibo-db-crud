@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface FollowService {
 
-    Result getFollowUserVoList(Integer userId);
+    Result getFollowUserVoList(Integer userId,Integer myUserId,Integer pageNum);
 
-    Result getBeFollowedUserVoList(Integer userId);
+    Result getBeFollowedUserVoList(Integer userId,Integer myUserId,Integer pageNum);
 
     Result getMutualFollowUserVoList(Integer userId);
 
@@ -32,6 +32,5 @@ public interface FollowService {
     Integer countFansNum(Integer userId);
 
     Integer countCommonUsersNum(Integer userId_one,Integer userId_two);
-
 
 }
