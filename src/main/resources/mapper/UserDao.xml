@@ -522,21 +522,23 @@
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
 
-    <select id="selectFollowUserListByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectFollowUserListByUserId" parameterType="map" resultMap="BaseResultMap">
     select
     b.user_id, b.log_name, b.user_password, b.nick_name, b.email_address, b.phone_number, b.user_avatar,
     b.user_gender, b.user_per_signature, b.user_place, b.user_birthday, b.gmt_create, b.gmt_modify,
     b.is_tag, b.is_del
     from tb_user a,tb_follow,tb_user b
     where a.user_id=follow_user_id and be_followed_user_id=b.user_id and a.is_del=false and b.is_del=false and tb_follow.is_del=false and a.user_id = #{userId,jdbcType=INTEGER}
+    limit #{startIndex},#{pageSize}
   </select>
-    <select id="selectBeFollowUserListByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectBeFollowUserListByUserId" parameterType="map" resultMap="BaseResultMap">
     select
     a.user_id, a.log_name, a.user_password, a.nick_name, a.email_address, a.phone_number, a.user_avatar,
     a.user_gender, a.user_per_signature, a.user_place, a.user_birthday, a.gmt_create, a.gmt_modify,
     a.is_tag, a.is_del
     from tb_user a,tb_follow,tb_user b
     where a.user_id=follow_user_id and be_followed_user_id=b.user_id and a.is_del=false and b.is_del=false and tb_follow.is_del=false and b.user_id = #{userId,jdbcType=INTEGER}
+    limit #{startIndex},#{pageSize}
   </select>
     <select id="getPassword" parameterType="java.lang.String" resultMap="BaseResultMap">
         select

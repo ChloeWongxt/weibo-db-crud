@@ -2,6 +2,7 @@ package com.chloe.weibo.core.service;
 
 import com.chloe.weibo.core.dao.FollowDao;
 import com.chloe.weibo.core.dao.UserDao;
+import com.chloe.weibo.pojo.data.PageBean;
 import com.chloe.weibo.pojo.data.Result;
 import com.chloe.weibo.core.entity.Follow;
 import com.chloe.weibo.core.entity.User;
@@ -36,27 +37,48 @@ public class FollowServiceImpl implements FollowService {
     @Transactional
     @Override
     public Result getFollowUserVoList(Integer userId,Integer myUserId,Integer pageNum) {
-        List<User> followUserList =userDao.selectFollowUserListByUserId(userId);
+        FollowExample followExample=new FollowExample();
+        followExample.createCriteria().andFollowUserIdEqualTo(userId).andIsDelEqualTo(false);
+        int total=followDao.countByExample(followExample);
+        int pagesize=5;
+        PageBean<UserRecomVo> userVoPageBean =new PageBean<>(pageNum,pagesize,total);
+
+        int startIndex= userVoPageBean.getStartIndex();
+
+        List<User> followUserList =userDao.selectFollowUserListByUserId(userId,startIndex,pagesize);
         List<UserVo> followUserVoList=userService.changeUserListToUserVoList(followUserList);
         List<UserRecomVo> userRecomVoList=new ArrayList<>();
         for (UserVo userVo: followUserVoList){
             UserRecomVo userRecomVo=new UserRecomVo(userVo,checkIsFollow(myUserId,userVo.getUserId()));
             userRecomVoList.add(userRecomVo);
         }
-        return ResultUtil.success(userRecomVoList);
+
+            userVoPageBean.setList(userRecomVoList);
+            return ResultUtil.success(userVoPageBean);
     }
 
     @Transactional
     @Override
     public Result getBeFollowedUserVoList(Integer userId,Integer myUserId,Integer pageNum) {
-        List<User> befollowUserList =userDao.selectBeFollowUserListByUserId(userId);
+
+        FollowExample followExample=new FollowExample();
+        followExample.createCriteria().andBeFollowedUserIdEqualTo(userId).andIsDelEqualTo(false);
+        int total=followDao.countByExample(followExample);
+        int pagesize=5;
+        PageBean<UserRecomVo> userVoPageBean =new PageBean<>(pageNum,pagesize,total);
+
+        int startIndex= userVoPageBean.getStartIndex();
+
+        List<User> befollowUserList =userDao.selectBeFollowUserListByUserId(userId,startIndex,pagesize);
         List<UserVo> befollowedUserVoList =userService.changeUserListToUserVoList(befollowUserList);
         List<UserRecomVo> userRecomVoList=new ArrayList<>();
         for (UserVo userVo: befollowedUserVoList){
             UserRecomVo userRecomVo=new UserRecomVo(userVo,checkIsFollow(myUserId,userVo.getUserId()));
             userRecomVoList.add(userRecomVo);
         }
-        return ResultUtil.success(userRecomVoList);
+
+        userVoPageBean.setList(userRecomVoList);
+        return ResultUtil.success(userVoPageBean);
     }
 
     @Transactional

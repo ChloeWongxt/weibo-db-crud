@@ -231,7 +231,4 @@ public class WeiboController {
     public Result getCollectiondWeibo(@RequestParam("userId") int userId,@RequestParam("pageNum")int pageNum) {
         return ResultUtil.success(weiboService.getCollectionWeiboVoList(userId,pageNum));
     }
-
-
-
 }

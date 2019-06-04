@@ -1,12 +1,10 @@
 package com.chloe.weibo.core.controller;
 
+import com.chloe.weibo.core.service.interfaces.*;
 import com.chloe.weibo.pojo.data.Result;
 import com.chloe.weibo.core.entity.User;
-import com.chloe.weibo.core.service.interfaces.UserDataService;
-import com.chloe.weibo.core.service.interfaces.UserRecommendService;
-import com.chloe.weibo.core.service.interfaces.UserService;
-import com.chloe.weibo.core.service.interfaces.UserTagService;
 import com.chloe.weibo.common.utils.ResultUtil;
+import com.chloe.weibo.pojo.vo.UserRecomVo;
 import com.chloe.weibo.pojo.vo.UserVo;
 import com.chloe.weibo.pojo.vo.WeiboVo;
 import org.apache.log4j.Logger;
@@ -38,6 +36,9 @@ public class UserController {
 
     @Autowired
     private UserDataService userDataService;
+
+    @Autowired
+    private FollowService followService;
 
     /**
      * 添加用户信息
@@ -71,8 +72,10 @@ public class UserController {
      * @return
      */
     @GetMapping(value = "/query-user")
-    public Result queryUserInfo(int userId) {
-        return ResultUtil.success(userService.getUserVoByUserId(userId));
+    public Result queryUserInfo(@RequestParam("userId")int userId,@RequestParam("myUserId")int myUserId) {
+        UserVo userVo=userService.getUserVoByUserId(userId);
+        UserRecomVo userRecomVo=new UserRecomVo(userVo,followService.checkIsFollow(myUserId,userId));
+        return ResultUtil.success(userRecomVo);
     }
 
     /**

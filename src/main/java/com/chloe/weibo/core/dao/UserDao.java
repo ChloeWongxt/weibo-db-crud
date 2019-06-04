@@ -29,9 +29,13 @@ public interface UserDao {
 
     int updateByPrimaryKey(User record);
 
-    List<User> selectFollowUserListByUserId(Integer userId);
+    List<User> selectFollowUserListByUserId(@Param("userId")Integer userId,
+                                            @Param("startIndex") int startIndex,
+                                            @Param("pageSize")int pageSize);
 
-    List<User> selectBeFollowUserListByUserId(Integer userId);
+    List<User> selectBeFollowUserListByUserId(@Param("userId")Integer userId,
+                                              @Param("startIndex") int startIndex,
+                                              @Param("pageSize")int pageSize);
 
     List<User> getPassword(String logName);
 
