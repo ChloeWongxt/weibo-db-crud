@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public class UserController {
      * @return
      */
     @PostMapping(value = "/delete-user")
-    public Result deleteUserInfo(UserVo userVo) {
+    public Result deleteUserInfo(UserVo userVo) throws ParseException {
         //用户不能注销!!!
         userService.updateUserVo(userVo);
         return ResultUtil.success("删除用户信息成功！");
@@ -72,7 +73,7 @@ public class UserController {
      * @return
      */
     @GetMapping(value = "/query-user")
-    public Result queryUserInfo(@RequestParam("userId")int userId,@RequestParam("myUserId")int myUserId) {
+    public Result queryUserInfo(@RequestParam("userId")int userId,@RequestParam("myUserId")int myUserId) throws ParseException {
         UserVo userVo=userService.getUserVoByUserId(userId);
         UserRecomVo userRecomVo=new UserRecomVo(userVo,followService.checkIsFollow(myUserId,userId));
         return ResultUtil.success(userRecomVo);
@@ -86,9 +87,10 @@ public class UserController {
      * @return
      */
     @PostMapping(value = "/update-user")
-    public Result updateUserInfo(@RequestBody UserVo userVo) {
+    public Result updateUserInfo(@RequestBody UserVo userVo) throws ParseException {
         userService.updateUserVo(userVo);
-        return ResultUtil.success("修改用户信息成功！");
+        int userId=userVo.getUserId();
+        return ResultUtil.success(userService.getUserVoByUserId(userId));
     }
 
     /**
@@ -97,15 +99,12 @@ public class UserController {
      * @return
      */
     @PostMapping(value = "/loginUser")
-    public Result loginUser(@RequestBody UserVo userVo) {
+    public Result loginUser(@RequestBody UserVo userVo) throws ParseException {
         String logName=userVo.getLogName();
         String userPassword=userVo.getUserPassword();
-//        logger.info("登录用户名：" + logName + "，密码：" + userPassword);
-//        System.out.println(logName+userPassword);
         if (!logName.isEmpty() && !userPassword.isEmpty()) {
             User user = userService.checkPassword(logName, userPassword);
             if (user != null) {
-//                logger.info(logName + "登录成功");
                 int userId=user.getUserId();
                 userVo=userService.getUserVoByUserId(userId);
                 return ResultUtil.success(userVo);
@@ -152,7 +151,7 @@ public class UserController {
      * @return
      */
     @GetMapping(value = "/get-recommend-userId")
-    public Result getRecommendUserId(int userId) {
+    public Result getRecommendUserId(int userId) throws ParseException {
         return ResultUtil.success(userRecommendService.getRecomUserInfoList(userId));
     }
 
@@ -164,12 +163,33 @@ public class UserController {
     }
 
     /**
+     * 更新用户密码
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/update-user-pass")
+    public Result updateUserPass(@RequestParam("loginName")String loginName,@RequestParam("org_password")String org_password,@RequestParam("new_password")String new_password) throws ParseException {
+        System.out.println(loginName);
+        System.out.println(org_password);
+        System.out.println(new_password);
+        User user=userService.checkPassword(loginName,org_password);
+        if (user==null){
+            return ResultUtil.error("原密码不正确");
+        }else {
+            int userId=user.getUserId();
+            user.setUserPassword(userService.encryptPsd(new_password));
+            userService.updateUser(user);
+            return ResultUtil.success("修改用户信息成功！");
+        }
+    }
+
+    /**
      * 更新用户头像
      * @param userVo
      * @return
      */
     @PostMapping(value = "/update-user-avatar")
-    public Result updateUserAvatar(@RequestBody UserVo userVo) {
+    public Result updateUserAvatar(@RequestBody UserVo userVo) throws ParseException {
         userService.updateUserVo(userVo);
         return ResultUtil.success("修改用户信息成功！");
     }
@@ -188,7 +208,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/get-hot-user")
-    public Result GetHotUser(@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) {
+    public Result GetHotUser(@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) throws ParseException {
         return userService.getHotUserVo(userId,pageNum);
     }
 
@@ -197,7 +217,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/get-common-follow-user")
-    public Result GetCommonFollowUser(@RequestParam("myUserId")int myUserId,@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) {
+    public Result GetCommonFollowUser(@RequestParam("myUserId")int myUserId,@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) throws ParseException {
         return userService.getCommonFollowUser(myUserId,userId,pageNum);
     }
 
@@ -206,7 +226,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/get-my-follow-her-user")
-    public Result GetMyFollowHerUser(@RequestParam("myUserId")int myUserId,@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) {
+    public Result GetMyFollowHerUser(@RequestParam("myUserId")int myUserId,@RequestParam("userId")int userId,@RequestParam("pageNum")int pageNum) throws ParseException {
         return userService.getMyFollowHerUser(myUserId,userId,pageNum);
     }
 
@@ -218,5 +238,14 @@ public class UserController {
     public Result updateRecomUser() {
         userRecommendService.getUserRecommend();
         return ResultUtil.success("更新推荐表成功");
+    }
+
+    /**
+     * 检查遗漏的用户
+     * @return
+     */
+    @PostMapping(value = "/check-miss-user")
+    public Result checkMissUser() {
+        return userService.checkMissUserId();
     }
 }

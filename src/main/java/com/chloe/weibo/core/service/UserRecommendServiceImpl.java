@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ public class UserRecommendServiceImpl implements UserRecommendService {
     public static class simi
     {
         double value; //相似值
-        int num;	 //相似物品号
+        int num;	 //相似用户号
     }
 
     @Transactional
@@ -90,15 +91,18 @@ public class UserRecommendServiceImpl implements UserRecommendService {
 //        System.out.println("2.计算物品之间相似性，得到相似性矩阵");
         for (i=0;i<itemsum;i++)
         {
-            for (j=0;j<itemsum;j++)
+            for (j=i;j<itemsum;j++)
             {
-
-                itemsim[i][j] = Simility(i,j,train[i],train[j]);
-                if(i == j) itemsim[i][j] = 0;   //此处有bug，已修改
+                if (i==j){
+                    itemsim[i][j] = 0;
+                }else {
+                    itemsim[i][j] = Simility(i,j,train[i],train[j]);
+                    itemsim[j][i]=itemsim[i][j];
+                }
             }
         }
 //        System.out.println("------------------------------------------------------------");
-//        //输出物品相似性矩阵
+//        //输出用户相似性矩阵
 //        for (i=0;i<10;i++)
 //        {
 //            System.out.println("Item"+":  ");
@@ -123,18 +127,17 @@ public class UserRecommendServiceImpl implements UserRecommendService {
 //            System.out.println();
 //        }
 //        System.out.println("------------------------------------------------------------");
-//        System.out.println("4.得到用户对物品兴趣程度的矩阵");
+//        System.out.println("4.得到用户对用户兴趣程度的矩阵");
         for(i=0;i<usersum;i++)
         {
             for(j=0;j<itemsum;j++)
             {
-                if(train[j][i]==0)            //如果用户i对物品j没有过行为，才计算i对j的预测兴趣程度
-                    trainuseritem[i][j]=getUserLikeItem(i,j,k);
-
+                if(train[i][j]==0)            //如果用户i对用户j没有过行为，才计算i对j的预测兴趣程度
+                trainuseritem[i][j]=getUserLikeItem(i,j,k);
             }
         }
 
-//        //输出用户对物品兴趣的矩阵
+//        //输出用户对用户兴趣的矩阵
 //        for (i=0;i<10;i++)
 //        {
 //            System.out.println("User_ins"+i+":  ");
@@ -264,12 +267,11 @@ public class UserRecommendServiceImpl implements UserRecommendService {
         double comUser = 0;                   //ItemA与ItemB的都被用户评论的用户个数
         double simility = 0.0;
 
-        int k;
-        for (k=0;i<usersum;i++)      //此处有bug，已修改
+        for (int s=0;s<usersum;s++)
         {
-            if (ItemA[i]>0&&ItemB[i]>0)
+            if (ItemA[s]>0&&ItemB[s]>0)
             {
-                comUser=comUser+1/Math.log(1+userData[i][1]);//查找ItemA与ItemB的都被用户评论的用户个数（被同一个用户关注的用户个数）
+                comUser=comUser+1/Math.log(1+userData[s][1]);//查找ItemA与ItemB的都被用户评论的用户个数（被同一个用户关注的用户个数）
             }
 //            if (ItemA[i]>0){
 //                countIa++;//评论ItemA的用户数量（关注ItemA的用户量）
@@ -292,7 +294,7 @@ public class UserRecommendServiceImpl implements UserRecommendService {
     }
 
 
-    /*物品相似性矩阵排序（根据相似性由高到低排序）*/
+    /*用户相似性矩阵排序（根据相似性由高到低排序）*/
     public static void quickSort(int x, int start, int end) {
         if (start < end) {
             double base = simiItem[x][start].value; // 选定的基准值（第一个数值作为基准值）
@@ -300,8 +302,10 @@ public class UserRecommendServiceImpl implements UserRecommendService {
             int i_tmp;
             int i = start, j = end;
             do {
+                //找小于等于base的
                 while ((simiItem[x][i].value > base) && (i < end))
                     i++;
+                //找大于等于base的
                 while ((simiItem[x][j].value < base) && (j > start))
                     j--;
                 if (i <= j) {
@@ -339,10 +343,10 @@ public class UserRecommendServiceImpl implements UserRecommendService {
     //得到用户i对物品j预测兴趣程度，用于推荐
     public static double getUserLikeItem(int i,int j,int k)
     {
-        for(int x=0;x<k;x++)//从物品j最相似的k个物品中，找出用户i有过行为的物品
+        for(int x=0;x<k;x++)//从用户j最相似的k个用户中，找出用户i有过行为的物品
         {
 //            System.out.println(simiItem[j][x].num);
-            if(train[simiItem[j][x].num][i]>0)//若这个用户同样对相似物品也有过行为
+            if(train[i][simiItem[j][x].num]>0)//若这个用户同样对相似用户也有过行为
             {
                 trainuseritem[i][j]+=simiItem[j][x].value;
             }
@@ -350,10 +354,10 @@ public class UserRecommendServiceImpl implements UserRecommendService {
         return trainuseritem[i][j];
     }
 
-    /*通过物品兴趣程度，推荐前N个*/
-    public static int getRecommend() //有bug,已修改
+    /*通过用户兴趣程度，推荐前N个*/
+    public static int getRecommend()
     {
-        int maxnum;//当前最感兴趣物品号
+        int maxnum;//当前最感兴趣用户号
         for(int i=0;i<usersum;i++)
         {
 
@@ -364,7 +368,7 @@ public class UserRecommendServiceImpl implements UserRecommendService {
                 maxnum = 0;
                 while(maxnum < itemsum && finflag[maxnum]!=0)
                     maxnum++;
-                for (int j=0;j<itemsum;j++)  //每循环一次就寻找此次感兴趣最大的物品
+                for (int j=0;j<itemsum;j++)  //每循环一次就寻找此次感兴趣最大的用户
                 {
                     if (trainuseritem[i][maxnum] < trainuseritem[i][j]&&finflag[j]==0)
                         maxnum = j;
@@ -394,11 +398,11 @@ public class UserRecommendServiceImpl implements UserRecommendService {
 
     @Transactional
     @Override
-    public List<UserRecomVo> getRecomUserInfoList(int userId) {
+    public List<UserRecomVo> getRecomUserInfoList(int userId) throws ParseException {
         RecomUser recomUser=getRecomUser(userId);
         List<Integer> recomUserIdList=new ArrayList<>();
 
-        int recomNum=5;//主页显示推荐用户个数
+        int recomNum=10;//主页显示推荐用户个数
         switch (recomNum){
             case 10:
                 if (recomUser.getRecomUser10Id()!=null) {

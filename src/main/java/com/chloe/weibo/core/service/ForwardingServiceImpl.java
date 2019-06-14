@@ -8,6 +8,7 @@ import com.chloe.weibo.core.entity.entityExample.ForwardingExample;
 import com.chloe.weibo.common.exception.WeiboException;
 import com.chloe.weibo.core.entity.entityExample.WeiboExample;
 import com.chloe.weibo.core.service.interfaces.ForwardingService;
+import com.chloe.weibo.core.service.interfaces.UserDataService;
 import com.chloe.weibo.core.service.interfaces.WeiboService;
 import com.chloe.weibo.pojo.vo.WeiboVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class ForwardingServiceImpl implements ForwardingService {
     WeiboDao weiboDao;
     @Autowired
     WeiboService weiboService;
+    @Autowired
+    UserDataService userDataService;
 
     @Transactional
     @Override
@@ -59,6 +62,8 @@ public class ForwardingServiceImpl implements ForwardingService {
         int new_weiboId=weibo.getWeiboId();
         addForwarding(new_weiboId,orgWeiboId);
         increaseForwardingAmount(orgWeiboId);
+        //增加该人发微博数
+        userDataService.increaseWeiboAmount(weiboVo.getUserId());
     }
 
     @Transactional

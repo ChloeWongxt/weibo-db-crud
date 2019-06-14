@@ -1,6 +1,8 @@
 package com.chloe.weibo.core.service;
 
 import com.chloe.weibo.core.dao.*;
+import com.chloe.weibo.core.entity.RecomUser;
+import com.chloe.weibo.core.entity.UserData;
 import com.chloe.weibo.core.service.interfaces.FollowService;
 import com.chloe.weibo.pojo.data.PageBean;
 import com.chloe.weibo.pojo.data.Result;
@@ -21,6 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +53,8 @@ public class UserServiceImpl implements UserService {
     FollowService followService;
     @Autowired
     UserDataDao userDataDao;
+    @Autowired
+    RecomUserMapper recomUserMapper;
 
     @Transactional
     @Override
@@ -97,15 +104,19 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserVo getUserVoByUserId(Integer userId) {
+    public UserVo getUserVoByUserId(Integer userId) throws ParseException {
         User user=userDao.selectByPrimaryKey(userId);
+        if (user.getUserBirthday()!=null){
+            LocalDate localDate=user.getUserBirthday().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            user.setUserBirthday(java.sql.Date.valueOf(localDate));
+        }
         user.setUserPassword(null);
         return changeUserToUserVo(user);
     }
 
     @Transactional
     @Override
-    public Result getUserVoByUserIdReturnResult(Integer userId) {
+    public Result getUserVoByUserIdReturnResult(Integer userId) throws ParseException {
         UserVo userVo=getUserVoByUserId(userId);
         if (userVo!=null){
             return ResultUtil.success(userVo);
@@ -121,12 +132,13 @@ public class UserServiceImpl implements UserService {
         if (phoneNumber!=""&&phoneNumber!=null){
             if (!userVo.getPhoneNumber().matches("1[0-9]{10}") ||
                     userVo.getPhoneNumber().length() > 11) {
-                throw new WeiboException("添加用户表失败：手机号符合规范！");
+                throw new WeiboException("添加用户表失败：手机号不符合规范！");
             }
         }
 
         userVo.setUserPassword(encryptPsd(userVo.getUserPassword()));
         User user=new User(userVo);
+        //tb_user表中添加用户
         if (userDao.insertSelective(user)<=0){
             throw new WeiboException("添加用户表失败：数据库未知错误！");
         }else {
@@ -136,8 +148,18 @@ public class UserServiceImpl implements UserService {
             if (tags!=null){
                 userTagService.addUserTagList(userId,tags);
             }
+            //tb_userdata表中添加用户
             userDataService.addUserData(userId);
+            //在用户推荐表中，添加该用户信息
+            RecomUser recomUser=new RecomUser();
+            recomUser.setUserId(userId);
+            int effNum=recomUserMapper.insertSelective(recomUser);
+            if (effNum<=0){
+                throw new WeiboException("注册：插入推荐表失败");
+            }
+            System.out.println("加入推荐表成功");
         }
+
     }
 
     @Transactional
@@ -170,7 +192,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Result updateUserVo(UserVo userVo) {
+    public Result updateUserVo(UserVo userVo) throws ParseException {
 //        List<String> new_tagsName=userVo.getTags();
         User new_user=new User(userVo);
         int userId=userVo.getUserId();
@@ -297,7 +319,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Result getHotUserVo(int userId, int pageNum) {
+    public Result getHotUserVo(int userId, int pageNum) throws ParseException {
 
         int total=50;
         int pagesize=5;
@@ -329,7 +351,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Result getCommonFollowUser(int myUserId, int userId,int pageNum) {
+    public Result getCommonFollowUser(int myUserId, int userId,int pageNum) throws ParseException {
         int total=followDao.getCommonFollowUserListCount(myUserId,userId);
         int pagesize=5;
         PageBean<UserRecomVo> userVoPageBean =new PageBean<>(pageNum,pagesize,total);
@@ -355,7 +377,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Result getMyFollowHerUser(int myUserId, int userId,int pageNum) {
+    public Result getMyFollowHerUser(int myUserId, int userId,int pageNum) throws ParseException {
 
         int total=followDao.getMyFollowHerUserListCount(myUserId,userId);
         int pagesize=5;
@@ -374,9 +396,26 @@ public class UserServiceImpl implements UserService {
                 UserRecomVo userRecomVo=new UserRecomVo(userVo,followService.checkIsFollow(myUserId,commonFollowUserId));
                 myFollowHerUserRecomVoList.add(userRecomVo);
             }
-
             userVoPageBean.setList(myFollowHerUserRecomVoList);
             return ResultUtil.success(userVoPageBean);
+        }
+    }
+
+    @Transactional
+    @Override
+    public Result checkMissUserId() {
+        List<Integer> missUserIdList=new ArrayList<>();
+        for (int i=1;i<=4473;i++){
+            UserData userData=userDataDao.selectByPrimaryKey(i);
+//            User user=userDao.selectByPrimaryKey(i);
+            if (userData==null){
+                missUserIdList.add(i);
+            }
+        }
+        if (missUserIdList==null){
+            return ResultUtil.success("没有遗漏的");
+        }else {
+            return ResultUtil.success(missUserIdList);
         }
     }
 }

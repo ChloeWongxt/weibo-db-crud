@@ -4,6 +4,7 @@ import com.chloe.weibo.pojo.data.Result;
 import com.chloe.weibo.core.entity.User;
 import com.chloe.weibo.pojo.vo.UserVo;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface UserService {
@@ -16,9 +17,9 @@ public interface UserService {
 
     List<UserVo> changeUserListToUserVoList(List<User> userList);
 
-    UserVo getUserVoByUserId(Integer userId);
+    UserVo getUserVoByUserId(Integer userId) throws ParseException;
 
-    Result getUserVoByUserIdReturnResult(Integer userId);
+    Result getUserVoByUserIdReturnResult(Integer userId) throws ParseException;
 
     void addUserVo(UserVo userVo);
 
@@ -30,7 +31,7 @@ public interface UserService {
 
     void updateUser(User user);
 
-    Result updateUserVo(UserVo userVo);
+    Result updateUserVo(UserVo userVo) throws ParseException;
 
     User checkPassword(String loginName, String password);
 
@@ -44,10 +45,12 @@ public interface UserService {
 
     Result getSearchUserVo(int userId,String userName,int pageNum);
 
-    Result getHotUserVo(int userId,int pageNum);
+    Result getHotUserVo(int userId,int pageNum) throws ParseException;
 
-    Result getCommonFollowUser(int myUserId,int userId,int pageNum);
+    Result getCommonFollowUser(int myUserId,int userId,int pageNum) throws ParseException;
 
-    Result getMyFollowHerUser(int myUserId,int userId,int pageNum);
+    Result getMyFollowHerUser(int myUserId,int userId,int pageNum) throws ParseException;
+
+    Result checkMissUserId();
 
 }
